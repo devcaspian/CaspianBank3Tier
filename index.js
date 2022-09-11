@@ -1,20 +1,28 @@
-function Spa(){
-	return(
-		
-		<HashRouter >
-		 <Navbar/>
-		 <UserContext.Provider value={{users: [{name: 'caspian', email: 'caspian.alderman@gmail.com', password: '1234', balance: 1500}]}}>
-		 <Route path="/" exact component={Home} />
-		 <Route path="/createaccount/" component={CreateAccount} />
-		 <Route path="/alldata/" component={AllData} />
-		 <Route path="/withdraw/" component={Withdraw} />
-		 <Route path="/deposit/" component={Deposit} />
-		 </UserContext.Provider>
-		</HashRouter>
-	);
-}
+var express = require('express');
+var app = express();
+var cors = require('cors');
+var dal = require('./dal.js');
 
-ReactDOM.render(
-	<Spa/>,
-	document.getElementById("root")
-)
+app.use(express.static('public'));
+app.use(cors());
+
+app.get('/account/create/:name/:email/:password', function (req, res){
+	dal.create(req.params.name, req.params.email, req.params.password).
+		then((user) => {
+			console.log(user);
+			res.send(user);
+		});
+	});
+
+
+app.get('/account/all', function (req,res){
+	dal.all().
+		then((docs) => {
+			console.log(docs);
+			res.send(docs);
+		});
+});
+
+var port = 3000;
+app.listen(port);
+console.log('Running on port:' + port);
