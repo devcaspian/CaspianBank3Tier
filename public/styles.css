@@ -1,0 +1,12 @@
+ .mb-3 {
+	background-color: #f3ebf6;
+}
+
+.nav-link:hover {
+background-color:grey; /*will change background-color of element on hover */
+color: black; /*will change color of text within the element on hover */
+}
+
+    .active {
+        background-color:grey;
+    }

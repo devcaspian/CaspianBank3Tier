@@ -1,9 +1,15 @@
-function CreateAccount(){
+function CreateAccount({ theme }){
 	const [show, setShow] = React.useState(true);
 	const [status, setStatus] = React.useState('');
 	const [name, setName] = React.useState('');
 	const [email, setEmail] = React.useState('');
 	const [password, setPassword] = React.useState('');
+
+
+	  var background = "light";
+	  var writing = "dark";
+	  var buttoncl = "btn btn-dark"
+
 
 	function validate(field, label){
 		if (!field) {
@@ -24,11 +30,15 @@ function CreateAccount(){
 		if (!validate(name, 'name')) return;
 		if (!validate(email, 'email')) return;
 		if (!validate(password, 'password')) return;
-		const url = `/account/create/${name}/${email}/${password}`;
-		(async () => {
-			var res = await fetch(url);
-			var data = await res.json();
-		})();
+		fetch(`/account/create/${name}/${email}/${password}`)
+			.then(response => response.json())
+			.then(data => {
+				console.log(data);
+				const auth = firebase.auth();
+				const promise = auth.createUserWithEmailAndPassword(email, password);
+
+				promise.catch(({message}) => console.log(message))
+			});
 		setShow(false);
 	}
 
@@ -43,7 +53,8 @@ function CreateAccount(){
 
 	return(
 		<Card
-		 bgcolor="primary"
+		 bgcolor={background}
+		 txtcolor={writing}
 		 header="Create Account"
 		 status={status}
 		 body={show ? (
@@ -54,12 +65,12 @@ function CreateAccount(){
 			 <input type="input" className="form-control" id="email" placeholder="Enter email" value={email} onChange={e => setEmail(e.currentTarget.value)} /><br/>
 			 Password<br/>
 			  <input type="input" className="form-control" id="password" placeholder="Enter password" value={password} onChange={e => setPassword(e.currentTarget.value)} /><br/>
-			  <button type="submit" className="btn btn-light" onClick={handleCreate}>Create Account</button>
+			  <button type="submit" variant={buttoncl} onClick={handleCreate}>Create Account</button>
 			 </>
 		 ):(
 		     <>
 			 <h5>Success!</h5>
-			 <button type="submit" className="btn btn-light" onClick={clearForm}>Add another account</button>
+			 <button type="submit" variant={buttoncl} onClick={clearForm}>Add another account</button>
 			 </>
 		 )}
 		/>

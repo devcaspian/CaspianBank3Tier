@@ -1,10 +1,26 @@
-function Deposit(){
+function Deposit({ authenticated, userData, setUserData, theme }){
 
  const ctx = React.useContext(UserContext);
  const [depositAmount, setDepositAmount] = React.useState(0);
  const [show, setShow] = React.useState(true);
- const [balance, setBalance] = React.useState(100);
+ const [balance, setBalance] = React.useState(userData.balance);
  const [status, setStatus] = React.useState('');
+
+
+	  var background = "light";
+	  var writing = "dark";
+	  var buttoncl = "btn btn-dark"
+
+	if (theme === "light"){
+		background = "light";
+	    writing = "dark";
+		buttoncl = "outline-dark";
+	} else {
+	    background = "dark";
+		writing = "white";
+		buttoncl = "outline-light";
+	}
+
 
   function validate(){
 	 if (depositAmount < 0){
@@ -23,10 +39,21 @@ function Deposit(){
 
  function handleDeposit(){
   if (!validate()) return; 
-  setBalance(parseInt(balance) + parseInt(depositAmount)); 
+  let newTotal = parseInt(balance) + parseInt(depositAmount)
+  setBalance(newTotal); 
+  let email = userData.email;
+  const url = `/account/update/${email}/${parseInt(depositAmount)}`;
+   (async () => {
+			var res = await fetch(url);
+			var data = await res.json();
+		})();
+  let copiedData = {...userData};
+  copiedData.balance = newTotal;
+  setUserData(copiedData);
   setShow(false);
   event.preventDefault();
 };
+
  function clearForm(){
 	setDepositAmount(0);
 	setShow(true);
@@ -35,7 +62,8 @@ function Deposit(){
  return(
 	<Card
 	   title=""
-	   bgcolor="primary"
+	   bgcolor={background}
+	   txtcolor={writing}
 	   header="Deposit"
 	   status={status}
 	   body={show ? (
@@ -43,13 +71,13 @@ function Deposit(){
 			 <h2>Current Balance: ${balance} </h2>
 			 Deposit Amount<br/>
 			 <input type="number" className="form-control" id="deposit-amount" placeholder="Enter deposit amount" value={depositAmount} onChange={e => setDepositAmount(e.currentTarget.value)} /><br/>
-			  <button type="submit" className="btn btn-light" onClick={handleDeposit}>Deposit ${depositAmount}</button>
+			  <button type="submit" variant={buttoncl} onClick={handleDeposit}>Deposit ${depositAmount}</button>
 			 </>
 		 ):(
 		     <>
 			 <h5>Success!</h5>
 			 <h2>Current Balance: ${balance} </h2>
-			 <button type="submit" className="btn btn-light" onClick={clearForm}>Make Another Deposit</button>
+			 <button type="submit" variant={buttoncl} onClick={clearForm}>Make Another Deposit</button>
 			 </>
 		 )}
 
